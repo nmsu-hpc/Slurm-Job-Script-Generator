@@ -14,9 +14,7 @@
 	
 
 	var nmsu_script_gen = new NMSUScriptGen(document.getElementById("NMSUJobScriptGenerator"));
-	
-	/* Dynamically generate this using PHP or whatever. You may also statically configure it */
-	
+		
 	nmsu_script_gen.settings.partitions = {
 		names : ["normal", "gpu", "debug"],
 		show : true
@@ -25,7 +23,7 @@
 
 
 
-    //NodesList
+    	//NodesList
 	nmsu_script_gen.settings.partitions_status = {
 		"normal" : { "nodes_from" : "joker-c[2-15]"},
 		"gpu" : { "nodes_from" : "joker-g1"},
