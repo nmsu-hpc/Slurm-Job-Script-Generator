@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+	<meta charset="utf-8">
+	<title>Job Script Generator</title>
+	<link rel="stylesheet" type="text/css" href="NMSUJobScriptGenerator.css">
+	<script type="text/javascript" src="NMSUJobScriptGenerator.js"></script>
+</head>
+<body>
+<div id="NMSUJobScriptGenerator"></div>
+
+<script type="text/javascript">
+	
+
+	var nmsu_script_gen = new NMSUScriptGen(document.getElementById("NMSUJobScriptGenerator"));
+	
+	/* Dynamically generate this using PHP or whatever. You may also statically configure it */
+	
+	nmsu_script_gen.settings.partitions = {
+		names : ["normal", "gpu", "debug"],
+		show : true
+	};
+	/* End of stuff */
+
+
+
+    //NodesList
+	nmsu_script_gen.settings.partitions_status = {
+		"normal" : { "nodes_from" : "joker-c[2-15]"},
+		"gpu" : { "nodes_from" : "joker-g1"},
+		"debug" :  { "nodes_from" : "joker-c1, joker-g1"}
+	};
+	/* End of dynamically generated stuff */
+
+	nmsu_script_gen.init();
+</script>
+
+
+
+</div>
+</body>
+</html>
