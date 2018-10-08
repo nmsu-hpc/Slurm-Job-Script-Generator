@@ -131,7 +131,7 @@ NMSUScriptGen.prototype.createForm = function(doc) {
 	this.inputs.num_cpus = this.newInput({value:1, size:3});
 	//this.inputs.mem_per_core = this.newInput({value:1, size:6});
 	this.inputs.mem_units = this.newSelect({options:[["GB", "GB"],["MB", "MB"]]});
-    this.inputs.walldays = this.newInput({value:"0", size:1});
+   	this.inputs.walldays = this.newInput({value:"0", size:1});
 	this.inputs.wallhours = this.newInput({value:"00", size:2});
 	this.inputs.wallmins = this.newInput({value:"01", size:2, maxLength:2});
 	this.inputs.wallsecs = this.newInput({value:"00", size:2, maxLength:2});
@@ -176,7 +176,7 @@ NMSUScriptGen.prototype.createForm = function(doc) {
 	//table.appendChild(this.returnNewRow("nmsu_sg_row_mempercore", "Memory per processor core: ", this.newSpan(null, this.inputs.mem_per_core, this.inputs.mem_units)));
 	table.appendChild(this.returnNewRow("nmsu_sg_row_walltime", "Walltime: ", this.newSpan(null, this.inputs.walldays, " days ",this.inputs.wallhours, " hours ", this.inputs.wallmins, " mins ", this.inputs.wallsecs, " secs")));
 	table.appendChild(this.returnNewRow("nmsu_sg_row_requeueable", "Job is requeueable: ", this.inputs.is_requeueable));
-    table.appendChild(this.returnNewRow("nmsu_sg_row_emailaddress", "Email address: ", this.inputs.email_address));
+    	table.appendChild(this.returnNewRow("nmsu_sg_row_emailaddress", "Email address: ", this.inputs.email_address));
 	table.appendChild(this.returnNewRow("nmsu_sg_row_emailevents", "Receive email for job events: ",
 				this.newSpan(null,
 						this.inputs.email_begin,
@@ -206,10 +206,10 @@ NMSUScriptGen.prototype.retrieveValues = function() {
 	this.values.is_requeueable = this.inputs.is_requeueable.checked;
 	this.values.walltime_in_minutes = this.inputs.walldays.value * 24 * 3600 + this.inputs.wallhours.value * 3600 + this.inputs.wallmins.value * 60;
 	this.values.num_cores = this.inputs.num_cores.value;
-    this.values.nodes =this.inputs.single_node.value;
-    this.values.gpus = this.inputs.num_cpus.value;
+    	this.values.nodes = this.inputs.single_node.value;
+    	this.values.gpus = this.inputs.num_cpus.value;
 	this.values.job_name = this.inputs.job_name.value;
-    this.values.output_name = this.inputs.output_name.value;
+    	this.values.output_name = this.inputs.output_name.value;
 	this.values.sendemail = {};
 	this.values.sendemail.begin = this.inputs.email_begin.checked;
 	this.values.sendemail.end = this.inputs.email_end.checked;
@@ -219,15 +219,14 @@ NMSUScriptGen.prototype.retrieveValues = function() {
     
 	/* Add warnings, etc. to jobnotes array */
 	if(this.values.MB_per_core > 20*1024*1024)
-        jobnotes.push("Error: Are you crazy? That is way too much RAM!");
+        	jobnotes.push("Error: Are you crazy? That is way too much RAM!");
 	if(this.values.walltime_in_minutes > ((86400*7)+3600) && this.values.partitions.indexOf("gpu") > -1)
 		jobnotes.push("Error: Partition gpu maximum walltime is 7 days and 1 hour");
 	if(this.values.walltime_in_minutes > ((86400*7)+3600) && this.values.partitions.indexOf("normal") > -1)
 		jobnotes.push("Error: Partition normal maximum walltime is 7 days and 1 hour");
-    if(this.values.walltime_in_minutes > 3600 && this.values.partitions.indexOf("debug") > -1)
-        jobnotes.push("Error: Partition debug maximum walltime is 1 hour");
+    	if(this.values.walltime_in_minutes > 3600 && this.values.partitions.indexOf("debug") > -1)
+        	jobnotes.push("Error: Partition debug maximum walltime is 1 hour");
 	
-
 	this.jobNotesDiv.innerHTML = jobnotes.join("<br/>\n");
 };
 
@@ -246,45 +245,45 @@ NMSUScriptGen.prototype.generateScriptSLURM = function () {
 	var sbatch = function sbatch(txt) {
 		scr += "#SBATCH " + txt + "\n";
 	};
-    var procs;
+    	var procs;
 	
-    //job name
-    if(this.inputs.job_name.value && this.inputs.job_name.value != "") {
-        sbatch("--job-name " + this.inputs.job_name.value + "   ##name that will show up in the queue");
-    }
+    	//job name
+    	if(this.inputs.job_name.value && this.inputs.job_name.value != "") {
+        	sbatch("--job-name " + this.inputs.job_name.value + "   ##name that will show up in the queue");
+    	}
     
-    //output name
-    if(this.inputs.output_name.value && this.inputs.output_name.value != "") {
-        sbatch("--output " + this.inputs.output_name.value + "   ##filename of the output; the %j will append the jobID to the end of the name making the output files unique despite the sane job name; default is slurm-[jobID].out");
-    }
+    	//output name
+    	if(this.inputs.output_name.value && this.inputs.output_name.value != "") {
+        	sbatch("--output " + this.inputs.output_name.value + "   ##filename of the output; the %j will append the jobID to the end of the name making the output files unique despite the sane job name; default is slurm-[jobID].out");
+    	}
     
-    //number of nodes to use; default = 1
-    sbatch("--nodes " + this.inputs.single_node.value + "  ##number of nodes to use");
+    	//number of nodes to use; default = 1
+    	sbatch("--nodes " + this.inputs.single_node.value + "  ##number of nodes to use");
     
-    //number of tasks (analyses) to run; default = 1
-    sbatch("--ntasks " + this.values.num_cores + "  ##number of tasks (analyses) to run");
+    	//number of tasks (analyses) to run; default = 1
+    	sbatch("--ntasks " + this.values.num_cores + "  ##number of tasks (analyses) to run");
     
-    //time for analysis (day-hour:min:sec). defaut = 0-00:01:00
-    sbatch("--time " + this.inputs.walldays.value + "-" + this.inputs.wallhours.value + ":" + this.inputs.wallmins.value + ":" + this.inputs.wallsecs.value + "  ##time for analysis (day-hour:min:sec)");
+    	//time for analysis (day-hour:min:sec). defaut = 0-00:01:00
+    	sbatch("--time " + this.inputs.walldays.value + "-" + this.inputs.wallhours.value + ":" + this.inputs.wallmins.value + ":" + this.inputs.wallsecs.value + "  ##time for analysis (day-hour:min:sec)");
     
-    //the number of threads the code will use; default = 1
-    sbatch("--cpus-per-task " + this.inputs.num_cpus.value + "  ##the number of threads the code will use");
+    	//the number of threads the code will use; default = 1
+    	sbatch("--cpus-per-task " + this.inputs.num_cpus.value + "  ##the number of threads the code will use");
 
-    //the partition to run in [options: normal, gpu, debug]; default = normal
-    if(!this.values.partitions.length == 1) {
-        sbatch("--partition normal  ##the partition to run in [options: normal, gpu, debug]");
-    } else {
-        var partitions = this.values.partitions.join(",");
-        sbatch("--partition " + partitions + "  ##the partition to run in [options: normal, gpu, debug]");
-    }
+    	//the partition to run in [options: normal, gpu, debug]; default = normal
+    	if(!this.values.partitions.length == 1) {
+        	sbatch("--partition normal  ##the partition to run in [options: normal, gpu, debug]");
+    	} else {
+        	var partitions = this.values.partitions.join(",");
+       		sbatch("--partition " + partitions + "  ##the partition to run in [options: normal, gpu, debug]");
+    	}
 
 	//sbatch("--mem-per-cpu=" + this.inputs.mem_per_core.value + this.inputs.mem_units.value.substr(0,1) + "   # memory per CPU core");
 
-    //requeueable
-    if(this.inputs.is_requeueable.checked)
-        sbatch("--requeue  ##requeue when preempted and on node failure");
+    	//requeueable
+    	if(this.inputs.is_requeueable.checked)
+        	sbatch("--requeue  ##requeue when preempted and on node failure");
     
-    //emain options
+    	//emain options
 	if(this.inputs.email_begin.checked || this.inputs.email_end.checked || this.inputs.email_abort.checked) {
         sbatch("--mail-user " + this.values.email_address + "  ##your email address");
 		if(this.inputs.email_address.value == this.settings.defaults.email_address)
